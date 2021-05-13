@@ -31,15 +31,16 @@ async def on_message(Message):
     for attachment in Message.attachments:
         if any(attachment.filename.lower().endswith(image) for image in image_types):
             await attachment.save(attachment.filename)
+            filenam = attachment.filename
             if (probe_file(attachment.filename) == True):
-            	filenam = attachment.filename
             	print("NIELEGALNY PLIK")
             	await Message.delete()
             	channel = Message.channel
             	await channel.send("Przepraszamy, plik, który został wrzucony, był prawdopodobnie niebezpieczny i został automatycznie usunięty.")
-            	os.remove(filenam) 
             else:
             	print("Bezpieczny plik")
+                
+            os.remove(filenam) 
     
 #3
 
