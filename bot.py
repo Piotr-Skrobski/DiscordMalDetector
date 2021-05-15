@@ -31,7 +31,6 @@ async def on_message(Message):
     for attachment in Message.attachments:
         if any(attachment.filename.lower().endswith(image) for image in image_types):
             await attachment.save(attachment.filename)
-            filenam = attachment.filename
             if (probe_file(attachment.filename) == True):
             	print("NIELEGALNY PLIK")
             	await Message.delete()
@@ -39,21 +38,11 @@ async def on_message(Message):
             	await channel.send("Przepraszamy, plik, który został wrzucony, był prawdopodobnie niebezpieczny i został automatycznie usunięty.")
             else:
             	print("Bezpieczny plik")
-                
-            os.remove(filenam) 
     
 #3
 
 def probe_file(filename):
 
-
-    #Check for change in color space
-    cmd = ['ffmpeg', '-i', filename, '-vframes', '1', '-q:v', '1', 'first.jpg']
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-    print(p.stdout.read())
-
-    #Check for change in resolution
     cmd = ['ffprobe', '-v', 'error', '-show_entries', 'frame=width,height', '-select_streams', 'v', '-of', 'csv=p=0', filename]
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     print(filename)
@@ -64,7 +53,6 @@ def probe_file(filename):
         line = p.stdout.readline()
         if not line:
             break
-        #the real code does filtering here
         lines.append(line.decode('utf-8').rstrip('/n'))
 
     for number, line in enumerate(lines):
